@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Router } from 'react-router-dom';
 
-function App() {
+
+// Our modules
+import Routes from './routes';
+import history from './services/history';
+
+import GlobalStyle from './styles/global';
+import useWindowSize from "./styles/optional-desktop-responsive"
+import { ToastContainer } from 'react-toastify'
+// import { Provider } from 'react-redux';
+// import { store } from './store';
+
+const App = props => {
+  
+    //const rate = 62.5
+    const rate = useWindowSize()
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    // <Provider store={store}>
+        <Router history={history}>
+            <Routes></Routes>
+            <GlobalStyle rate={rate} />
+            <ToastContainer autoClose={4000} />
+        </Router>
+    // </Provider>
+)};
 
 export default App;
