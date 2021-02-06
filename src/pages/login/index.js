@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField'
 
 import * as formik from 'formik';
@@ -20,11 +20,13 @@ import pp_logo from "../../assets/pp_logo_login.svg"
 import api from '../../services/api'
 import { toast } from 'react-toastify';
 import { logout } from '../../services/auth';
+import Loading from '../../components/Loading';
 
 const Login = () => {
 
   const { Formik } = formik;
   const history = useHistory()
+  const [loading, setLoading] = useState(false)
 
   // FORM SCHEMA
   const schema = yup.object({
@@ -32,9 +34,10 @@ const Login = () => {
     password: yup.string().required('senha é obrigatória')
   })
 
-  async function handleLogin(values, actions) {
+  // API CALL
 
-    
+  async function handleLogin(values, actions) {
+    setLoading(true)
     actions.setErrors({message: ''})
 
     try {
@@ -57,8 +60,10 @@ const Login = () => {
       actions.setErrors({message: message})
     }
 
+    setLoading(false)
   } 
 
+  // PAGE EFFECTS
 
   useEffect(() => {
     logout()
@@ -114,8 +119,8 @@ const Login = () => {
                       className='text-input'
                     />
                   </div>
-                  <button type='submit'>
-                    Continuar
+                  <button type='submit' disabled={loading}>
+                    Continuar {loading && <Loading />}
                   </button>
                 </form>
               )}

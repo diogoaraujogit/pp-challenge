@@ -1,14 +1,17 @@
 import { FormControlLabel, Modal, TextField } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api'
-import { Container, Content, Header, Body, VisibilityModal, RemoveModal } from './styles';
+import { Container, LoadingArea, Content, Header, Body, VisibilityModal, RemoveModal, MessageArea } from './styles';
 import placeholder from '../../assets/image_placeholder.jpg'
 import { Visibility, VisibilityOff, Edit, Clear } from '@material-ui/icons'
 import { format } from 'date-fns';
 import Popup from 'reactjs-popup';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useHistory } from 'react-router-dom';
+
+import BasicDatePicker from '../../components/BasicDatePicker'
+import Loading from '../../components/Loading';
 
 const Dashboard = () => {
 
@@ -17,12 +20,17 @@ const Dashboard = () => {
   const [categories, setCategories] = useState([])
   const [ecommerceChecked, setEcommerceChecked] = useState(true)
   const [callChecked, setCallChecked] = useState(false)
+  const [pageLoading, setPageLoading] = useState(true)
+  const [pageMessage, setPageMessage] = useState('')
+
+  const [date, changeDate] = useState(new Date());
 
   const token = localStorage.getItem('@pp/jwt_token')
   const history = useHistory()
 
 
   async function getCategories() {
+    setPageLoading(true)
 
     try {
 
@@ -37,6 +45,8 @@ const Dashboard = () => {
     } catch (e) {
 
     }
+
+    setPageLoading(false)
   }
 
   async function removeCategory(id, close) {
@@ -84,141 +94,156 @@ const Dashboard = () => {
   return (
     <Layout title="Lista de categorias">
       <Container>
-        <Content>
-          <Header>
-            <h2>Lista de Categorias</h2>
-            <div>
-              <div>
-                <TextField
-                  id="outlined-error-helper-text"
-                  label="Buscar Categoria"
-                  variant="outlined"
-                  name='search'
-                  onChange={e => setSearchTerm(e.target.value)}
-                  value={searchTerm}
-                  className='text-input'
-                />
-              </div>
-              <button onClick={() => history.push('/category')}>
-                criar nova categoria
-              </button>
-            </div>
-          </Header>
-          <Body>
-            <div className='categories-table'>
-              <div className='categories-table-header'>
-                <h3>Nome da Categoria</h3>
-                <h3>Criação</h3>
-                <h3>Ações</h3>
-              </div>
-              <div className='categories-table-body'>
-                {
-                  categoriesToSHow.map(category => {
+        {
+          pageLoading ?
+            <LoadingArea>
+              <Loading />
+            </LoadingArea>
+            :
+            pageMessage ?
+              <MessageArea>
+                {pageMessage}
+              </MessageArea>
+              :
+              <Content>
+                <Header>
+                  <h2>Lista de Categorias</h2>
+                  <div>
+                    <div>
+                      <TextField
+                        id="outlined-error-helper-text"
+                        label="Buscar Categoria"
+                        variant="outlined"
+                        name='search'
+                        onChange={e => setSearchTerm(e.target.value)}
+                        value={searchTerm}
+                        className='text-input'
+                      />
+                    </div>
+                    <button onClick={() => history.push('/category')}>
+                      criar nova categoria
+                    </button>
+                  </div>
+                </Header>
+                <Body>
+                  <div className='categories-table'>
+                    <div className='categories-table-header'>
+                      <h3>Nome da Categoria</h3>
+                      <h3>Criação</h3>
+                      <h3>Ações</h3>
+                    </div>
+                    <div className='categories-table-body'>
+                      {
+                        categoriesToSHow.map(category => {
 
-                    const id = category.id
-                    const logo = category.logo || placeholder
-                    const name = category.name
-                    const created = new Date(category.created_at) || '-'
-                    const created_formatted = format(created, 'dd/MM/yyyy')
-                    const visibility = true
+                          const id = category.id
+                          const logo = category.logo || placeholder
+                          const name = category.name
+                          const created = new Date(category.created_at) || '-'
+                          const created_formatted = format(created, 'dd/MM/yyyy')
+                          const visibility = category.visible
 
-                    return (
-                      <div className='table-item'>
-                        <div className='name'>
-                          <img src={logo} alt='' />
-                          <p>{name}</p>
-                        </div>
-                        <div className='created'>
-                          <p>{created_formatted}</p>
-                        </div>
-                        <div className='actions'>
-                          <div>
-                            <Popup
-                              contentStyle={{ width: '45rem', height: '36rem', borderRadius: '1rem' }}
-                              trigger={
-                                visibility ?
-                                  <Visibility />
-                                  :
-                                  <VisibilityOff />
-                              }
-                              modal
-                            >
-                              {
-                                close => {
+                          return (
+                            <div className='table-item'>
+                              <div className='name' onClick={() => history.push(`/category/${id}`)}>
+                                <img src={logo} alt='' />
+                                <p>{name}</p>
+                              </div>
+                              <div className='created'>
+                                <p>{created_formatted}</p>
+                              </div>
+                              <div className='actions'>
+                                <div>
+                                  <Popup
+                                    autofocus
+                                    contentStyle={{ width: '45rem', height: '36rem', borderRadius: '1rem' }}
+                                    trigger={
+                                      visibility ?
+                                        <Visibility />
+                                        :
+                                        <VisibilityOff />
+                                    }
+                                    modal
+                                  >
+                                    {
+                                      close => {
 
-                                  return (
-                                    <VisibilityModal>
-                                      <div className='title'>
-                                        Alternar visibilidade
-                                      </div>
-                                      <div>
-                                        <div>
-                                          <FormControlLabel
-                                            control={<Checkbox checked={ecommerceChecked} onChange={(e) => setEcommerceChecked(e.target.checked)} name="eccomerce" />}
-                                            label="Custom color"
-                                          />
-                                        </div>
-                                        <div>
+                                        return (
+                                          <VisibilityModal>
+                                            <div className='title'>
+                                              Alternar visibilidade
+                                            </div>
+                                            <div>
+                                              <div>
+                                                <FormControlLabel
+                                                  control={<Checkbox checked={ecommerceChecked} onChange={(e) => setEcommerceChecked(e.target.checked)} name="eccomerce" />}
+                                                  label="Custom color"
+                                                />
+                                                
+                                              <BasicDatePicker value={date} handleChange={changeDate} />
+                                              </div>
+                                              <div>
 
-                                        </div>
-                                        <div>
+                                              </div>
+                                              <div>
 
-                                        </div>
-                                      </div>
-                                    </VisibilityModal>
-                                  )
-                                }
-                              }
-                            </Popup>
-                          </div>
-                          <div>
-                            <Edit onClick={() => history.push(`/category/${id}`)} />
-                          </div>
-                          <div>
-                            <Popup
-                              contentStyle={{ width: '60rem', height: '22rem', borderRadius: '1rem' }}
-                              trigger={
-                                <Clear />
-                              }
-                              modal
-                            >
-                              {
-                                close => {
+                                              </div>
+                                            </div>
+                                          </VisibilityModal>
+                                        )
+                                      }
+                                    }
+                                  </Popup>
+                                </div>
+                                <div>
+                                  <Edit onClick={() => history.push(`/category/${id}`)} />
+                                </div>
+                                <div>
+                                  <Popup
+                                    contentStyle={{ width: '60rem', height: '22rem', borderRadius: '1rem' }}
+                                    trigger={
+                                      <Clear />
+                                    }
+                                    modal
+                                  >
+                                    {
+                                      close => {
 
-                                  return (
-                                    <RemoveModal>
-                                      <div className='title'>
-                                        Remover Categoria
+                                        return (
+                                          <RemoveModal>
+                                            <div className='title'>
+                                              Remover Categoria
                                     </div>
-                                      <div className='body'>
-                                        <p>
-                                          Tem certeza que deseja remover a categoria <span>Emagrecimento</span>?<br />
+                                            <div className='body'>
+                                              <p>
+                                                Tem certeza que deseja remover a categoria <span>Emagrecimento</span>?<br />
                                         Esta ação não poderá ser desfeita
                                       </p>
-                                        <div className='buttons'>
-                                          <button className='cancel' onClick={() => handleRemove(id, close)}>
-                                            remover permanentemente
+                                              <div className='buttons'>
+                                                <button className='cancel' onClick={() => handleRemove(id, close)}>
+                                                  remover permanentemente
                                         </button>
-                                          <button className='confirm'>
-                                            manter categoria
+                                                <button className='confirm'>
+                                                  manter categoria
                                         </button>
-                                        </div>
-                                      </div>
-                                    </RemoveModal>
-                                  )
-                                }
-                              }
-                            </Popup>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })
-                }
-              </div>
-            </div>
-          </Body>
-        </Content>
+                                              </div>
+                                            </div>
+                                          </RemoveModal>
+                                        )
+                                      }
+                                    }
+                                  </Popup>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })
+                      }
+                    </div>
+                  </div>
+                </Body>
+              </Content>
+        }
       </Container>
     </Layout>
   );

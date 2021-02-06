@@ -7,6 +7,23 @@ export const Container = styled.div`
   overflow-y: auto;
 `;
 
+export const LoadingArea = styled.div`
+  height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const MessageArea = styled.div`
+  height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+`;
+
+
+
 export const Content = styled.div`
   height: 100%;
   width: 100%;
@@ -112,6 +129,7 @@ export const Body = styled.div`
     .name {
       display: flex;
       align-items: center;
+      cursor: pointer;
 
       img {
         width: 3.2rem;

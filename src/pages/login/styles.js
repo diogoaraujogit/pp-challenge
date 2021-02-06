@@ -79,6 +79,17 @@ export const Body = styled.div`
         border-radius: 99px;
         font-size: 1.2rem;
         margin-bottom: 2.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .MuiCircularProgress-root {
+          width: 1.2rem !important;
+          height: 1.2rem !important;
+          margin-left: 1rem;
+          color: #ffffff;
+        }
+
       }
     }
 

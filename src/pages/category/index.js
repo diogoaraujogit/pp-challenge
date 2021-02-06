@@ -248,7 +248,7 @@ const Category = () => {
               </div>
             </div>
             <div className='form-buttons'>
-              <button className='cancel'>
+              <button onClick={() => history.push('/dashboard')} className='cancel'>
                 Cancelar
               </button>
               <button type='submit' form='category' className='confirm'>
