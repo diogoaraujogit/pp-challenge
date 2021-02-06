@@ -15,21 +15,21 @@ import Loading from '../../components/Loading'
 
 const Category = () => {
 
-  const { Formik } = formik;
   const history = useHistory()
+  const token = localStorage.getItem('@pp/jwt_token')
+  const ref = useRef();
   const { id } = useParams()
+  const { Formik } = formik;  
 
+  // eslint-disable-next-line
   const { defaultValue, registerField } = useField('avatar');
-
+  // eslint-disable-next-line
   const [file, setFile] = useState();
   const [preview, setPreview] = useState(placeholder);
   const [category, setCategory] = useState({})
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  const token = localStorage.getItem('@pp/jwt_token')
-
-  const ref = useRef();
 
 
   // FORM SCHEMA
@@ -37,6 +37,10 @@ const Category = () => {
     category: yup.string().required('nome da categoria é obrigatório'),
     short_description: yup.string().required('descrição é obrigatória')
   })
+
+  // API CALLS
+
+  // CREATE CATEGORY
 
   async function handleCreate(values, actions) {
     setSaving(true)
@@ -66,8 +70,6 @@ const Category = () => {
       const response = await api.post('/store/category', body, { headers: { "Authorization": `Bearer ${token}` } })
 
       if (response) {
-        console.log('Resposta')
-        console.log(response)
         toast.success('Categoria criada com sucesso')
         history.push('/dashboard')
       }
@@ -81,6 +83,8 @@ const Category = () => {
     setSaving(false)
 
   }
+
+  // SAVE CATEGORY
 
   async function handleSave(values, actions) {
     setSaving(true)
@@ -109,6 +113,8 @@ const Category = () => {
     setSaving(false)
   }
 
+  // GET CATEGORY
+
   async function getCategory() {
     setLoading(true)
 
@@ -129,17 +135,20 @@ const Category = () => {
     setLoading(false)
   }
 
+  // AVATAR FILE CONTROL
+
   const handleChangeAvatar = event => {
 
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.onload = (e) => {
         setPreview(e.target.result);
-        console.log(e.target)
       };
       reader.readAsDataURL(event.target.files[0]);
     }
   }
+
+  // PAGE EFFECTS
 
   useEffect(() => {
 
@@ -147,7 +156,6 @@ const Category = () => {
 
   }, [])
 
-  console.log(preview === placeholder)
 
   useEffect(() => {
     if (ref.current) {

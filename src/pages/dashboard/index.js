@@ -1,16 +1,18 @@
-import { FormControlLabel, Modal, TextField } from '@material-ui/core';
-import React, { Fragment, useEffect, useState } from 'react';
+// import { FormControlLabel, Modal } from '@material-ui/core';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { TextField } from '@material-ui/core';
+import React, {  useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import api from '../../services/api'
-import { Container, LoadingArea, Content, Header, Body, VisibilityModal, RemoveModal, MessageArea } from './styles';
+import { Container, LoadingArea, Content, Header, Body, RemoveModal, MessageArea } from './styles';
 import placeholder from '../../assets/image_placeholder.jpg'
 import { Visibility, VisibilityOff, Edit, Clear } from '@material-ui/icons'
 import { format } from 'date-fns';
 import Popup from 'reactjs-popup';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 import { useHistory } from 'react-router-dom';
 
-import BasicDatePicker from '../../components/BasicDatePicker'
+// import BasicDatePicker from '../../components/BasicDatePicker'
 import Loading from '../../components/Loading';
 import { toast } from 'react-toastify';
 import MaterialTooltip from '../../components/MaterialTooltip';
@@ -20,13 +22,13 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [categoriesToSHow, setCategoriesToShow] = useState([])
   const [categories, setCategories] = useState([])
-  const [ecommerceChecked, setEcommerceChecked] = useState(true)
-  const [callChecked, setCallChecked] = useState(false)
+  // const [ecommerceChecked, setEcommerceChecked] = useState(true)
+  // const [callChecked, setCallChecked] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
   const [pageMessage, setPageMessage] = useState('')
   const [deleting, setDeleting] = useState(false)
 
-  const [date, changeDate] = useState(new Date());
+  // const [date, changeDate] = useState(new Date());
 
   const token = localStorage.getItem('@pp/jwt_token')
   const history = useHistory()
@@ -44,7 +46,6 @@ const Dashboard = () => {
       const response = await api.get('/store/category', { headers: { "Authorization": `Bearer ${token}` } })
 
       if (response.data) {
-        console.log(response)
         setCategories(response.data.items)
         setCategoriesToShow(response.data.items)
       }
@@ -68,7 +69,6 @@ const Dashboard = () => {
       const response = await api.delete(`/store/category/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
 
       if (response.data) {
-        console.log(response)
         close()
         getCategories()
         toast.success('Categoria removida com sucesso')
@@ -167,7 +167,7 @@ const Dashboard = () => {
                           const visibility = category.visible
 
                           return (
-                            <div className='table-item'>
+                            <div key={id} className='table-item'>
                               <div className='name' onClick={() => history.push(`/category/${id}`)}>
                                 <img src={logo} alt='' />
                                 <p>{name}</p>
