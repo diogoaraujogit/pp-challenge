@@ -46,6 +46,7 @@ const Login = () => {
 
       if(response.data) {
         toast.info('Sucesso')
+        localStorage.setItem('@pp/jwt_token', response.data.jwt)
         history.push('/dashboard')
       }
 
