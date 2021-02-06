@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import TextField from '@material-ui/core/TextField'
 
 import * as formik from 'formik';
@@ -19,6 +19,7 @@ import {
 import pp_logo from "../../assets/pp_logo_login.svg"
 import api from '../../services/api'
 import { toast } from 'react-toastify';
+import { logout } from '../../services/auth';
 
 const Login = () => {
 
@@ -57,6 +58,11 @@ const Login = () => {
     }
 
   } 
+
+
+  useEffect(() => {
+    logout()
+  }, [])
 
   return (
     <Container>

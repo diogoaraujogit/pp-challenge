@@ -5,11 +5,13 @@ export const Container = styled.div`
   width: 100vw;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
 `;
 
 export const Header = styled.div`
   width: 100%;
-  height: 6.4rem;
+  min-height: 6.4rem;
   background: linear-gradient(90.17deg, #034AFD 0%, #22E0A1 100%);
 
   display: flex;
@@ -48,7 +50,7 @@ export const Header = styled.div`
 
 export const NavigationInfo = styled.div`
   width: 100%;
-  height: 4rem;
+  min-height: 4rem;
   display: flex;
   align-items: center;
   padding: 0rem 2.4rem;
@@ -64,4 +66,5 @@ export const NavigationInfo = styled.div`
 
 export const Children = styled.div`
   flex: 1;
+  overflow-y: auto;
 `;

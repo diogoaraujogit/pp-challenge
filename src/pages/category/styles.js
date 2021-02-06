@@ -9,6 +9,21 @@ export const Content = styled.div`
   height: 100%;
 `;
 
+export const LoadingArea = styled.div`
+  height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const MessageArea = styled.div`
+  height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+
 export const Header = styled.div`
   height: 5.5rem;
   border-bottom: 1px solid #E1E1E1;

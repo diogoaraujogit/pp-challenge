@@ -4,23 +4,27 @@ import { useField } from '@rocketseat/unform';
 import Layout from '../../components/Layout';
 import * as formik from 'formik';
 import * as yup from 'yup';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import api from '../../services/api'
-import { Container, Content, Header, Body, AvatarInput } from './styles';
+import { Container, Content, LoadingArea, Header, Body, AvatarInput } from './styles';
 import { TextField } from '@material-ui/core';
 import { toast } from 'react-toastify';
 
 import placeholder from '../../assets/image_placeholder.jpg'
+import Loading from '../../components/Loading'
 
 const Category = () => {
 
   const { Formik } = formik;
   const history = useHistory()
-  
+  const { id } = useParams()
+
   const { defaultValue, registerField } = useField('avatar');
 
-  const [file, setFile] = useState(defaultValue && defaultValue.id);
+  const [file, setFile] = useState();
   const [preview, setPreview] = useState(placeholder);
+  const [category, setCategory] = useState({})
+  const [loading, setLoading] = useState(false)
 
   const token = localStorage.getItem('@pp/jwt_token')
 
@@ -33,7 +37,7 @@ const Category = () => {
     short_description: yup.string().required('descrição é obrigatória')
   })
 
-  async function handleLogin(values, actions) {
+  async function handleCreate(values, actions) {
 
     actions.setErrors({ message: '' })
 
@@ -43,7 +47,7 @@ const Category = () => {
         "from": 0,
         "status": true
       },
-      "description": "string",
+      "description": values.short_description,
       "ecommerce": {
         "from": 0,
         "status": true
@@ -52,69 +56,75 @@ const Category = () => {
         "string"
       ],
       "keywords_concat": "string",
-      "logo": preview,
-      // "logo_content_type": "string",
+      "logo": preview === placeholder? '' : preview,
       "name": values.category,
-      // "parent_id": 0,
-      // "position": 0,
-      // "products": [
-      //   "string"
-      // ],
-      // "store_id": "string",
-      // "subcategories": [
-      //   {
-      //     "callcenter": {
-      //       "available": true,
-      //       "from": 0
-      //     },
-      //     "description": "string",
-      //     "ecommerce": {
-      //       "available": true,
-      //       "from": 0
-      //     },
-      //     "keywords": [
-      //       "string"
-      //     ],
-      //     "keywords_concat": "string",
-      //     "logo": "string",
-      //     "logo_content_type": "string",
-      //     "name": "string",
-      //     "position": 0,
-      //     "products": [
-      //       "string"
-      //     ],
-      //     "visible": true
-      //   }
-      // ],
       "visible": true
     }
 
     try {
 
-      const response = await api.post('/store/category', body, { headers: {"Authorization" : `Bearer ${token}`} })
+      const response = await api.post('/store/category', body, { headers: { "Authorization": `Bearer ${token}` } })
 
       if (response.data) {
         toast.info('Sucesso')
-        // history.push('/dashboard')
+        history.push('/dashboard')
       }
 
     } catch (e) {
-      const message = e?.response?.data?.message || 'Houve um erro ao realizar o login'
+      const message = e?.response?.data?.message || 'Houve um erro ao salvar as informacoes'
       toast.error(message)
       actions.setErrors({ message: message })
     }
 
   }
 
-  useEffect(() => {
-    if (ref.current) {
-      registerField({
-        name: 'avatar_id',
-        ref: ref.current,
-        path: 'dataset.file',
-      });
+  async function handleSave(values, actions) {
+
+    actions.setErrors({ message: '' })
+
+    console.log(values)
+    const body = {
+      "description": values.short_description,
+      "name": values.category,
+      "new_logo_image": preview === placeholder? '' : preview,
     }
-  }, [ref.current]);
+
+    try {
+
+      const response = await api.put(`/store/category/${id}`, body, { headers: { "Authorization": `Bearer ${token}` } })
+
+      if (response.data) {
+        toast.info('Sucesso')
+        history.push('/dashboard')
+      }
+
+    } catch (e) {
+      const message = e?.response?.data?.message || 'Houve um erro ao salvar as informacoes'
+      toast.error(message)
+      actions.setErrors({ message: message })
+    }
+
+  }
+
+  async function getCategory() {
+    setLoading(true)
+
+    try {
+
+      const response = await api.get(`/store/category/${id}`, { headers: { "Authorization": `Bearer ${token}` } })
+
+      if (response.data) {
+        setPreview(response.data.logo || placeholder)
+        setCategory(response.data)
+      }
+
+    } catch (e) {
+      const message = e?.response?.data?.message || 'Houve um erro ao carregar a categoria'
+      toast.error(message)
+    }
+
+    setLoading(false)
+  }
 
   const handleChangeAvatar = event => {
 
@@ -128,12 +138,38 @@ const Category = () => {
     }
   }
 
+  useEffect(() => {
+
+    id && getCategory()
+
+  }, [])
+
+  console.log(preview === placeholder)
+
+  useEffect(() => {
+    if (ref.current) {
+      registerField({
+        name: 'avatar_id',
+        ref: ref.current,
+        path: 'dataset.file',
+      });
+    }
+  }, [ref.current]);
+
+
+
   return (
     <Layout title="Gerenciar categoria">
       <Container>
-        <Content>
+        {
+          loading?
+          <LoadingArea>
+            <Loading />
+          </LoadingArea>
+          :
+          <Content>
           <Header>
-            <h2>Emagrecimento</h2>
+            <h2>{category.name || ''}</h2>
           </Header>
           <Body>
             <div className='card'>
@@ -162,13 +198,18 @@ const Category = () => {
                     validateOnChange={false}
                     validateOnBlur={false}
                     validationSchema={schema}
-                    onSubmit={handleLogin}
-                    initialValues={{}}
+                    onSubmit={id? handleSave : handleCreate}
+                    initialValues={{
+                      category: category.name || '',
+                      short_description: category.description || ''
+                    }}
                   >
                     {({
                       handleSubmit,
                       handleChange,
                       errors,
+                      initialValues,
+                      values
                     }) => (
                       <form id="category" noValidate onSubmit={handleSubmit}>
                         <p>{errors && errors.message}</p>
@@ -183,6 +224,7 @@ const Category = () => {
                             onChange={handleChange}
                             className='text-input'
                             inputProps={{ maxLength: 20 }}
+                            value={values.category}
                           />
                         </div>
                         <div>
@@ -196,6 +238,7 @@ const Category = () => {
                             onChange={handleChange}
                             className='text-input'
                             inputProps={{ maxLength: 140 }}
+                            value={values.short_description}
                           />
                         </div>
                       </form>
@@ -214,6 +257,7 @@ const Category = () => {
             </div>
           </Body>
         </Content>
+        }
       </Container>
     </Layout>
   );
