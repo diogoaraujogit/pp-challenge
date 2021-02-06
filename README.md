@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Before running the project, generate a .env file similar to the .env.example file and place the api link.
+
 ## Available Scripts
 
 In the project directory, you can run:
