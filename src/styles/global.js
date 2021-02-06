@@ -23,12 +23,12 @@ export default createGlobalStyle`
     font-size: ${props => props.rate}%; /* Other way to make desktop responsive */
   }
   body {
-    font: 14px 'Roboto', sans-serif;
+    font: 14px 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     background: #FFFFFF;
   }
   * {
-    font: 14px 'Roboto', sans-serif;
+    font: 14px 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   a {
@@ -39,6 +39,7 @@ export default createGlobalStyle`
   }
   button {
     cursor: pointer;
+    border: none;
   }
   .input {
     width: 100%;

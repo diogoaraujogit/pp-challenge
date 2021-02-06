@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 import { useHistory } from 'react-router-dom';
 
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import {
   Container,
@@ -14,7 +15,10 @@ import {
   Body,
   Footer
 } from './styles';
+
 import pp_logo from "../../assets/pp_logo_login.svg"
+import api from '../../services/api'
+import { toast } from 'react-toastify';
 
 const Login = () => {
 
@@ -23,9 +27,35 @@ const Login = () => {
 
   // FORM SCHEMA
   const schema = yup.object({
-    username: yup.string().required('usuário é obrigatório'),
+    email: yup.string().required('usuário é obrigatório'),
     password: yup.string().required('senha é obrigatória')
   })
+
+  async function handleLogin(values, actions) {
+
+    
+    actions.setErrors({message: ''})
+
+    try {
+
+      const response = await api.post('/agent/login', {
+        password: values.password,
+        type: "string",
+        username: values.email 
+      })
+
+      if(response.data) {
+        toast.info('Sucesso')
+        history.push('/dashboard')
+      }
+
+    } catch(e) {
+      const message = e?.response?.data?.message || 'Houve um erro ao realizar o login'
+      toast.error(message)
+      actions.setErrors({message: message})
+    }
+
+  } 
 
   return (
     <Container>
@@ -37,61 +67,70 @@ const Login = () => {
         </Header>
         <Body>
           <div>
-            <h2>Fazer login</h2>
-            <h3>Ir para a interface administrativa do Pedido Pago</h3>
+            <h2>Fazer Login</h2>
+            <h3>Ir para a interface administrativa da Pedido Pago</h3>
             <Formik
               validateOnChange={false}
               validateOnBlur={false}
               validationSchema={schema}
-              onSubmit={(values) => {
-                console.log(values)
-                history.push('/dashboard')
-              }}
+              onSubmit={handleLogin}
               initialValues={{}}
             >
               {({
                 handleSubmit,
                 handleChange,
-                handleBlur,
-                values,
-                touched,
-                isValid,
                 errors,
               }) => (
                 <form noValidate onSubmit={handleSubmit}>
+                  <p>{errors && errors.message}</p>
                   <div>
                     <TextField
-                      error={errors && errors.username}
+                      error={!!(errors && (errors.email || errors.message))}
                       id="outlined-error-helper-text"
                       label="E-mail"
-                      helperText={errors && errors.username}
+                      helperText={errors && errors.email}
                       variant="outlined"
-                      name='username'
+                      name='email'
                       onChange={handleChange}
-                      className={errors && errors.username ? 'input-error' : ''}
+                      className='text-input'
                     />
                   </div>
                   <div>
-                    <input
-                      type='password'
+                    <TextField
+                      error={!!(errors && (errors.password || errors.message))}
+                      id="outlined-error-helper-text"
+                      label="Senha"
+                      helperText={errors && errors.password}
+                      variant="outlined"
                       name='password'
-                      placeholder='senha'
-                      value={values.password}
                       onChange={handleChange}
-                      className={errors && errors.password ? 'input-error' : ''}
+                      className='text-input'
                     />
-                    <p>{errors && errors.password}</p>
                   </div>
                   <button type='submit'>
-                    ENTRAR
+                    Continuar
                   </button>
                 </form>
               )}
             </Formik>
+            <p><a href='/forgot'>Esqueceu a senha? </a>Receba link de troca de senha no email cadastrado</p>
           </div>
         </Body>
         <Footer>
-
+          <div>
+            <section>  
+              © 2020 Pedido Pago
+            </section>
+            <section>
+              Termos gerais e condicões de uso
+            </section>
+            <section>
+              Política de Privacidade
+            </section>
+          </div>
+          <div>
+            <h4>Feito com &nbsp; <FavoriteIcon /> &nbsp; em SP</h4>
+          </div>
         </Footer>
       </Content>
     </Container>
