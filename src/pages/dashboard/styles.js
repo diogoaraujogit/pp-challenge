@@ -1,3 +1,4 @@
+import { darken } from 'polished';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -73,6 +74,12 @@ export const Header = styled.div`
         background: #22E0A1;
         border-radius: 99px;
         color: #ffffff;
+
+        transition: background 0.2s;
+
+        &:hover, &:disabled {
+          background-color: ${darken(0.05, '#22E0A1')}
+        }
       }
   }
 `;
@@ -148,6 +155,11 @@ export const Body = styled.div`
         color: #A3A3A3;
         font-size: 2.5rem;
         cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+          color: ${darken(0.2, '#A3A3A3')};
+        }
       }
     }
   }
@@ -213,12 +225,34 @@ export const RemoveModal = styled.div`
         border-color:  #22E0A1;
         background-color: #ffffff;
         color: #22E0A1;
+        transition: all 0.2s;
+        transition-property: background color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover, &:disabled {
+          background-color: #22E0A1;
+          color: #ffffff;
+        }
+
+          .MuiCircularProgress-root {
+            width: 1.2rem !important;
+            height: 1.2rem !important;
+            margin-left: 1rem;
+            color: #ffffff;
+          }
       }
 
       .confirm {
         border: none;
         background-color: #22E0A1;
         color: #ffffff;
+        transition: background 0.2s;
+
+        &:hover, &:disabled {
+          background-color: ${darken(0.05, '#22E0A1')};
+        }
       }
     }
 

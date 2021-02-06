@@ -1,3 +1,4 @@
+import { darken } from 'polished';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -84,6 +85,14 @@ export const Body = styled.div`
     .category-form {
       width: 100%;
 
+      form {
+        > p {
+          color: red;
+          text-align: center;
+          height: 3rem;
+        }
+      }
+
       .text-input {
         width: 100%;
         margin-bottom: 4rem;
@@ -119,14 +128,37 @@ export const Body = styled.div`
     }
 
     .cancel {
-      border-color:  #22E0A1;
-      background-color: #ffffff;
+        border-color:  #22E0A1;
+        background-color: #ffffff;
+        color: #22E0A1;
+        transition: all 0.2s;
+        transition-property: background color;
+
+        &:hover, &:disabled {
+          background-color: #22E0A1;
+          color: #ffffff;
+        }
     }
 
     .confirm {
       border: none;
       background-color: #22E0A1;
       color: #ffffff;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover, &:disabled {
+        background-color: ${darken(0.05, '#22E0A1')};
+      }
+
+      .MuiCircularProgress-root {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        margin-left: 1rem;
+        color: #ffffff;
+      }
     }
   }
 `;

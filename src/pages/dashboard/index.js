@@ -12,6 +12,8 @@ import { useHistory } from 'react-router-dom';
 
 import BasicDatePicker from '../../components/BasicDatePicker'
 import Loading from '../../components/Loading';
+import { toast } from 'react-toastify';
+import MaterialTooltip from '../../components/MaterialTooltip';
 
 const Dashboard = () => {
 
@@ -22,12 +24,17 @@ const Dashboard = () => {
   const [callChecked, setCallChecked] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
   const [pageMessage, setPageMessage] = useState('')
+  const [deleting, setDeleting] = useState(false)
 
   const [date, changeDate] = useState(new Date());
 
   const token = localStorage.getItem('@pp/jwt_token')
   const history = useHistory()
 
+
+  // API CALLS
+
+  // GET CATEGORIES
 
   async function getCategories() {
     setPageLoading(true)
@@ -43,13 +50,18 @@ const Dashboard = () => {
       }
 
     } catch (e) {
-
+      const message = e?.response?.data?.message || 'Houve um erro ao carregar as categorias'
+      toast.error(message)
+      setPageMessage(message)
     }
 
     setPageLoading(false)
   }
 
+  // REMOVE CATEGORY
+
   async function removeCategory(id, close) {
+    setDeleting(true)
 
     try {
 
@@ -59,17 +71,23 @@ const Dashboard = () => {
         console.log(response)
         close()
         getCategories()
+        toast.success('Categoria removida com sucesso')
       }
 
     } catch (e) {
-
+      const message = e?.response?.data?.message || 'Houve um erro ao remover a categoria'
+      toast.error(message)
     }
+
+    setDeleting(false)
   }
 
   const handleRemove = (id, close) => {
     removeCategory(id, close)
   }
 
+
+  // PAGE EFFECTS
 
   useEffect(() => {
 
@@ -134,6 +152,11 @@ const Dashboard = () => {
                     </div>
                     <div className='categories-table-body'>
                       {
+                        !categoriesToSHow.length?
+                        <div className='table-item'>
+                          Nenhuma categoria encontrada
+                        </div>
+                        :
                         categoriesToSHow.map(category => {
 
                           const id = category.id
@@ -154,7 +177,16 @@ const Dashboard = () => {
                               </div>
                               <div className='actions'>
                                 <div>
-                                  <Popup
+                                  <MaterialTooltip tip='Alterar visibilidade'>
+                                    {
+                                      visibility ?
+
+                                        <Visibility />
+                                        :
+                                        <VisibilityOff />
+                                    }
+                                  </MaterialTooltip>
+                                  {/* <Popup
                                     autofocus
                                     contentStyle={{ width: '45rem', height: '36rem', borderRadius: '1rem' }}
                                     trigger={
@@ -179,8 +211,8 @@ const Dashboard = () => {
                                                   control={<Checkbox checked={ecommerceChecked} onChange={(e) => setEcommerceChecked(e.target.checked)} name="eccomerce" />}
                                                   label="Custom color"
                                                 />
-                                                
-                                              <BasicDatePicker value={date} handleChange={changeDate} />
+
+                                                <BasicDatePicker value={date} handleChange={changeDate} />
                                               </div>
                                               <div>
 
@@ -193,16 +225,18 @@ const Dashboard = () => {
                                         )
                                       }
                                     }
-                                  </Popup>
+                                  </Popup> */}
                                 </div>
                                 <div>
-                                  <Edit onClick={() => history.push(`/category/${id}`)} />
+                                  <MaterialTooltip tip='Editar Categoria'>  
+                                    <Edit onClick={() => history.push(`/category/${id}`)} />
+                                  </MaterialTooltip>
                                 </div>
                                 <div>
                                   <Popup
                                     contentStyle={{ width: '60rem', height: '22rem', borderRadius: '1rem' }}
                                     trigger={
-                                      <Clear />
+                                        <Clear/>
                                     }
                                     modal
                                   >
@@ -213,19 +247,19 @@ const Dashboard = () => {
                                           <RemoveModal>
                                             <div className='title'>
                                               Remover Categoria
-                                    </div>
+                                            </div>
                                             <div className='body'>
                                               <p>
                                                 Tem certeza que deseja remover a categoria <span>Emagrecimento</span>?<br />
-                                        Esta ação não poderá ser desfeita
-                                      </p>
+                                                Esta ação não poderá ser desfeita
+                                              </p>
                                               <div className='buttons'>
-                                                <button className='cancel' onClick={() => handleRemove(id, close)}>
-                                                  remover permanentemente
-                                        </button>
-                                                <button className='confirm'>
+                                                <button className='cancel' disabled={deleting} onClick={() => handleRemove(id, close)}>
+                                                  remover permanentemente {deleting && <Loading />}
+                                                </button>
+                                                <button className='confirm' onClick={() => close()}>
                                                   manter categoria
-                                        </button>
+                                                </button>
                                               </div>
                                             </div>
                                           </RemoveModal>

@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { darken } from 'polished'
+
 
 export const Container = styled.div`
   width: 100vw;
@@ -82,6 +84,11 @@ export const Body = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: background 0.2s;
+
+        &:hover, &:disabled {
+          background-color: ${darken(0.05, '#22E0A1')}
+        }
 
         .MuiCircularProgress-root {
           width: 1.2rem !important;

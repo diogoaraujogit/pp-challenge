@@ -25,6 +25,7 @@ const Category = () => {
   const [preview, setPreview] = useState(placeholder);
   const [category, setCategory] = useState({})
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const token = localStorage.getItem('@pp/jwt_token')
 
@@ -38,9 +39,8 @@ const Category = () => {
   })
 
   async function handleCreate(values, actions) {
-
+    setSaving(true)
     actions.setErrors({ message: '' })
-
 
     const body = {
       "callcenter": {
@@ -65,24 +65,27 @@ const Category = () => {
 
       const response = await api.post('/store/category', body, { headers: { "Authorization": `Bearer ${token}` } })
 
-      if (response.data) {
-        toast.info('Sucesso')
+      if (response) {
+        console.log('Resposta')
+        console.log(response)
+        toast.success('Categoria criada com sucesso')
         history.push('/dashboard')
       }
 
     } catch (e) {
-      const message = e?.response?.data?.message || 'Houve um erro ao salvar as informacoes'
+      const message = e?.response?.data?.message || 'Houve um erro ao criar a categoria'
       toast.error(message)
       actions.setErrors({ message: message })
     }
 
+    setSaving(false)
+
   }
 
   async function handleSave(values, actions) {
-
+    setSaving(true)
     actions.setErrors({ message: '' })
 
-    console.log(values)
     const body = {
       "description": values.short_description,
       "name": values.category,
@@ -94,7 +97,7 @@ const Category = () => {
       const response = await api.put(`/store/category/${id}`, body, { headers: { "Authorization": `Bearer ${token}` } })
 
       if (response.data) {
-        toast.info('Sucesso')
+        toast.success('Categoria salva com sucesso')
         history.push('/dashboard')
       }
 
@@ -103,7 +106,7 @@ const Category = () => {
       toast.error(message)
       actions.setErrors({ message: message })
     }
-
+    setSaving(false)
   }
 
   async function getCategory() {
@@ -212,7 +215,6 @@ const Category = () => {
                       values
                     }) => (
                       <form id="category" noValidate onSubmit={handleSubmit}>
-                        <p>{errors && errors.message}</p>
                         <div>
                           <TextField
                             error={!!(errors && (errors.category || errors.message))}
@@ -241,6 +243,7 @@ const Category = () => {
                             value={values.short_description}
                           />
                         </div>
+                        <p>{errors && errors.message}</p>
                       </form>
                     )}
                   </Formik>
@@ -251,8 +254,8 @@ const Category = () => {
               <button onClick={() => history.push('/dashboard')} className='cancel'>
                 Cancelar
               </button>
-              <button type='submit' form='category' className='confirm'>
-                Salvar
+              <button disabled={saving} type='submit' form='category' className='confirm'>
+                Salvar {saving && <Loading />}
               </button>
             </div>
           </Body>
