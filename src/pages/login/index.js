@@ -112,6 +112,7 @@ const Login = () => {
                       error={!!(errors && (errors.password || errors.message))}
                       id="outlined-error-helper-text"
                       label="Senha"
+                      type="password"
                       helperText={errors && errors.password}
                       variant="outlined"
                       name='password'
