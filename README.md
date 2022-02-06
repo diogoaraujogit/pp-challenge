@@ -18,9 +18,12 @@ The application also has login and a search field for the categories.
 
 ## Preview
 
-Check out the video by clicking on the thumbnail. (YouTube)
+Check out the video by clicking on the thumbnail. (Github hosted video)
 
-[![PedidoPago](http://img.youtube.com/vi/jq9n5seHtFw/0.jpg)](http://www.youtube.com/watch?v=jq9n5seHtFw "PP")
+[![pedido-pago netlify app_](https://user-images.githubusercontent.com/51061974/152695814-7c50e5b9-c664-4127-90af-9e237b4dc289.png)](https://user-images.githubusercontent.com/51061974/152695381-1af49649-2723-4514-9506-92238019f54a.mp4 "PP")
+
+![pedido-pago netlify app_](https://user-images.githubusercontent.com/51061974/152696220-f9f595f7-537b-491a-a327-6b0aac4977dd.png)
+
 
 
 ## Instructions
@@ -31,7 +34,7 @@ it is running at https://pedido-pago.netlify.app/. All functions can be used nor
 
 
 #### `Run Local`
-You will not be able to run the application correctly because it needs a specific API link in the .env file to receive the data. But if you want to run anyway, just follow the steps below.
+You will not be able to run this application correctly because it needs a specific API link in the .env file to receive the data. But if you want to run it anyway, just follow the steps below.
 
 Clone down this repository. You will need `node` and `npm` installed globally on your machine.  
 
